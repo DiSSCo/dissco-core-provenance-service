@@ -2,7 +2,7 @@ package eu.dissco.core.provenanceservice.configuration;
 
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
-import eu.dissco.core.provenanceservice.propertes.MongoProperties;
+import eu.dissco.core.provenanceservice.properties.MongoProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;

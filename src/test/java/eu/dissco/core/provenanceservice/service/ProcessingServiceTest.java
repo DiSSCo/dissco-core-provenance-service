@@ -6,6 +6,7 @@ import static eu.dissco.core.provenanceservice.TestUtils.givenEvent;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,6 +42,7 @@ class ProcessingServiceTest {
     service.handleMessage(message);
 
     // Then
+    then(repository).should().insertNewVersion(PID, event);
   }
 
   @Test

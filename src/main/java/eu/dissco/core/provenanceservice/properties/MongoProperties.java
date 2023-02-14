@@ -1,4 +1,4 @@
-package eu.dissco.core.provenanceservice.propertes;
+package eu.dissco.core.provenanceservice.properties;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
