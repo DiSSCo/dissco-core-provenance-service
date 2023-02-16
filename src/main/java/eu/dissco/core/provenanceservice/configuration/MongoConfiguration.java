@@ -18,10 +18,9 @@ public class MongoConfiguration {
 
   @Bean
   public MongoCollection<Document> configureVersionDb() {
-    try (var client = MongoClients.create(properties.getConnectionString())) {
-      var database = client.getDatabase(properties.getDatabase());
-      return database.getCollection(properties.getCollection());
-    }
+    var client = MongoClients.create(properties.getConnectionString());
+    var database = client.getDatabase(properties.getDatabase());
+    return database.getCollection(properties.getCollection());
   }
 
 }
