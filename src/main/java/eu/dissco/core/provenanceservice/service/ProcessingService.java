@@ -26,7 +26,8 @@ public class ProcessingService {
     var collectionName = parseSubjectType(event.subjectType());
     var eventResult = eventRepository.insertNewVersion(versionId, event, collectionName);
     if (eventResult) {
-      log.info("Successfully processed event information for event: {}", versionId);
+      log.info("Successfully processed event information for {}: {}", event.subjectType(),
+          versionId);
     } else {
       log.warn("Failed to insert event into mongodb: {}", message);
       throw new MongodbException(message);
