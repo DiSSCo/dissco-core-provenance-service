@@ -15,15 +15,21 @@ public class TestUtils {
   public static final String TYPE = "update";
   public static final String AGENT = "processing-service";
   public static final String SUBJECT = "20.5000.1025/MKA-93P-4MS";
+  public static final String SUBJECT_TYPE = "DigitalSpecimen";
   public static final Instant TIMESTAMP = Instant.parse("2023-02-10T08:23:51.817Z");
   public static final String COMMENT = "Specimen has been updated";
 
   public static CreateUpdateDeleteEvent givenEvent() throws JsonProcessingException {
+    return givenEvent(SUBJECT_TYPE);
+  }
+
+  public static CreateUpdateDeleteEvent givenEvent(String subjectType) throws JsonProcessingException {
     return new CreateUpdateDeleteEvent(
         EVENT_ID,
         TYPE,
         AGENT,
         SUBJECT,
+        subjectType,
         TIMESTAMP,
         MAPPER.readValue(DIGITAL_SPECIMEN, JsonNode.class),
         MAPPER.readValue(CHANGE, JsonNode.class),
