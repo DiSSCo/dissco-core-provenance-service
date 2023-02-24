@@ -2,6 +2,7 @@ package eu.dissco.core.provenanceservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.dissco.core.provenanceservice.exception.MongodbException;
+import eu.dissco.core.provenanceservice.exception.UnknownSubjectException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.DltHandler;
@@ -26,7 +27,7 @@ public class KafkaConsumerService {
       autoCreateTopics = "true")
   @KafkaListener(topics = "${spring.kafka.consumer.topic}")
   public void getMessages(@Payload String message)
-      throws JsonProcessingException, MongodbException {
+      throws JsonProcessingException, MongodbException, UnknownSubjectException {
     processingService.handleMessage(message);
   }
 

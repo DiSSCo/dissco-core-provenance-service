@@ -12,12 +12,11 @@ import org.junit.jupiter.api.Test;
 
 class EventRepositoryIT extends BaseMongoRepositoryIT {
 
-
   private EventRepository repository;
 
   @BeforeEach
   void setup() {
-    repository = new EventRepository(collection, MAPPER);
+    repository = new EventRepository(database, MAPPER);
   }
 
   @Test
@@ -26,9 +25,11 @@ class EventRepositoryIT extends BaseMongoRepositoryIT {
     var event = givenEvent();
     var expected = Document.parse(MAPPER.writeValueAsString(event));
     expected.append("_id", PID);
+    var collectionName = "digital_specimen_provenance";
+    var collection = database.getCollection(collectionName);
 
     // When
-    repository.insertNewVersion(PID, event);
+    repository.insertNewVersion(PID, event, collectionName);
 
     // Then
     var result = collection.find();
@@ -41,10 +42,12 @@ class EventRepositoryIT extends BaseMongoRepositoryIT {
     var event = givenEvent();
     var expected = Document.parse(MAPPER.writeValueAsString(event));
     expected.append("_id", PID);
-    repository.insertNewVersion(PID, event);
+    var collectionName = "digital_specimen_provenance";
+    var collection = database.getCollection(collectionName);
+    repository.insertNewVersion(PID, event, collectionName);
 
     // When
-    repository.insertNewVersion(PID, event);
+    repository.insertNewVersion(PID, event, collectionName);
 
     // Then
     var result = collection.find();
