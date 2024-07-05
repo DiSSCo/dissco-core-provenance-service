@@ -35,7 +35,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar 
                   -Dsonar.projectKey=DiSSCo_${{ github.event.repository.name }}
-                  -Dsonar.coverage.exclusions=**/properties/**,**/configuration/**,**/exception/**
+                  -Dsonar.coverage.exclusions=**/properties/**,**/configuration/**,**/exception/**,**/maven/**
       - name: Login to Public ECR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v1
