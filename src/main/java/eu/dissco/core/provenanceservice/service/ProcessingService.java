@@ -51,7 +51,8 @@ public class ProcessingService {
   private String parseSubjectType(CreateUpdateTombstoneEvent event) throws UnknownSubjectException {
     var collectionName = SUBJECT_MAPPING.get(event.getProvEntity().getType());
     if (collectionName == null) {
-      throw new UnknownSubjectException("SubjectType: " + event + " is unknown");
+      throw new UnknownSubjectException(
+          "SubjectType: " + event.getProvEntity().getType() + " is unknown");
     } else {
       return collectionName;
     }
