@@ -31,9 +31,9 @@ class ProcessingServiceTest {
 
   private static Stream<Arguments> provideTestHandleMessage() {
     return Stream.of(
-        Arguments.of("DigitalSpecimen", "digital_specimen_provenance"),
-        Arguments.of("DigitalMediaObject", "digital_media_provenance"),
-        Arguments.of("Annotation", "annotation_provenance")
+        Arguments.of("ods:DigitalSpecimen", "digital_specimen_provenance"),
+        Arguments.of("ods:DigitalMedia", "digital_media_provenance"),
+        Arguments.of("ods:Annotation", "annotation_provenance")
     );
   }
 
@@ -75,7 +75,7 @@ class ProcessingServiceTest {
   @Test
   void testHandleMessageUnknownSubjectType() {
     // Given
-    var message = givenMessage("Unknown");
+    var message = givenMessage("ods:UnknownType");
 
     // When
     assertThatThrownBy(() -> service.handleMessage(message)).isInstanceOf(
@@ -85,61 +85,57 @@ class ProcessingServiceTest {
   }
 
   private String givenMessage() {
-    return givenMessage("DigitalSpecimen");
+    return givenMessage("ods:DigitalSpecimen");
   }
 
-  private String givenMessage(String subjectType) {
+  private String givenMessage(String entityType) {
     return """
-        {
-          "id": "82adfa56-b1ad-46ee-b05c-e7bbdaa52fb1",
-          "eventType": "update",
-          "agent": "processing-service",
-          "subject": "20.5000.1025/MKA-93P-4MS",
-          """ +
-        "\"subjectType\":\"" + subjectType + "\"," +
-        """
-              
-              "timestamp": "2023-02-10T08:23:51.817Z",
-              "eventRecord": {
-                "id": "20.5000.1025/MKA-93P-4MS",
-                "midsLevel": 0,
-                "version": 7,
-                "created": 1676027058.87354,
-                "digitalSpecimen": {
-                  "ods:physicalSpecimenId": "dissco-futures",
-                  "ods:type": "BotanySpecimen",
-                  "ods:attributes": {
-                    "ods:physicalSpecimenIdType": "cetaf",
-                    "ods:organizationId": "https://ror.org/0349vqz63",
-                    "ods:specimenName": "dissco-futures",
-                    "ods:datasetId": "A Dataset-5",
-                    "ods:physicalSpecimenCollection": "A collection",
-                    "ods:sourceSystemId": "20.5000.1025/GW0-TYL-YRU",
-                    "dwca:id": "dissco-futures"
-                  },
-                  "ods:originalAttributes": {
-                    "dwc:eventDate": "1994-08-25",
-                    "dwc:family": "Cupressaceae",
-                    "dwc:genus": "Glyptostrobus",
-                    "dwc:higherGeography": "Indo-China",
-                    "dwc:specificEpithet": "pensilis",
-                    "dwc:nomenclaturalCode": "ICBN",
-                    "dwc:catalogNumber": "00622948",
-                    "dwc:country": "LA",
-                    "dwc:basisOfRecord": "PreservedSpecimen"
-                  }
-                }
-              },
-              "change": [
-                {
-                  "op": "replace",
-                  "path": "/ods:attributes/ods:datasetId",
-                  "value": "A Dataset-5"
-                }
-              ],
-              "comment": "Specimen has been updated"
+              {
+        "@id": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
+        "@type": "ods:CreateUpdateTombstoneEvent",
+        "ods:ID": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
+        "ods:type": "https://doi.org/10.15468/1a2b3c",
+        "prov:Activity": {
+          "@id": "7ba628d4-2e28-4ce4-ad1e-e99c97c20507",
+          "@type": "ods:Create",
+          "prov:wasAssociatedWith": [
+            {
+              "@id": "https://orcid.org/0000-0002-1825-0097",
+              "prov:hadRole": "ods:Approver"
+            },
+            {
+              "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
+              "prov:hadRole": "ods:Requestor"
+            },
+            {
+              "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
+              "prov:hadRole": "ods:Generator"
             }
-            """;
+          ],
+          "prov:endedAtTime": "2024-06-11T09:14:00.348Z",
+          "prov:used": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1"
+        },
+        "prov:Entity": {
+          "@id": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
+        """ +
+        "\"@type\":\"" + entityType + "\"," +
+        """
+                "prov:wasGeneratedBy": "7ba628d4-2e28-4ce4-ad1e-e99c97c20507"
+              },
+              "ods:hasProvAgent": [
+                {
+                  "@id": "https://orcid.org/0000-0002-1825-0097",
+                  "@type": "prov:Person",
+                  "schema:name": "John Doe"
+                },
+                {
+                  "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
+                  "@type": "prov:SoftwareAgent",
+                  "schema:name": "Digital Specimen Processor"
+                }
+              ]
+            }
+                        """;
   }
 
 }

@@ -1,82 +1,63 @@
 package eu.dissco.core.provenanceservice;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.dissco.core.provenanceservice.domain.CreateUpdateDeleteEvent;
+import eu.dissco.core.provenanceservice.schema.Agent;
+import eu.dissco.core.provenanceservice.schema.Agent.Type;
+import eu.dissco.core.provenanceservice.schema.CreateUpdateTombstoneEvent;
+import eu.dissco.core.provenanceservice.schema.ProvActivity;
+import eu.dissco.core.provenanceservice.schema.ProvEntity;
+import eu.dissco.core.provenanceservice.schema.ProvWasAssociatedWith;
+import eu.dissco.core.provenanceservice.schema.ProvWasAssociatedWith.ProvHadRole;
 import java.time.Instant;
-import java.util.UUID;
+import java.util.Date;
+import java.util.List;
 
 public class TestUtils {
 
   public static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
-  public static final String PID = "20.5000.1025/MKA-93P-4MS/7";
-  public static final UUID EVENT_ID = UUID.fromString("82adfa56-b1ad-46ee-b05c-e7bbdaa52fb1");
-  public static final String TYPE = "update";
-  public static final String AGENT = "processing-service";
-  public static final String SUBJECT = "20.5000.1025/MKA-93P-4MS";
-  public static final String SUBJECT_TYPE = "DigitalSpecimen";
-  public static final Instant TIMESTAMP = Instant.parse("2023-02-10T08:23:51.817Z");
-  public static final String COMMENT = "Specimen has been updated";
+  public static final String PID = "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1";
+  public static final String ACTIVITY_ID = "7ba628d4-2e28-4ce4-ad1e-e99c97c20507";
+  public static final String SUBJECT_TYPE = "ods:DigitalSpecimen";
 
-  public static CreateUpdateDeleteEvent givenEvent() throws JsonProcessingException {
+  public static CreateUpdateTombstoneEvent givenEvent() {
     return givenEvent(SUBJECT_TYPE);
   }
 
-  public static CreateUpdateDeleteEvent givenEvent(String subjectType) throws JsonProcessingException {
-    return new CreateUpdateDeleteEvent(
-        EVENT_ID,
-        TYPE,
-        AGENT,
-        SUBJECT,
-        subjectType,
-        TIMESTAMP,
-        MAPPER.readValue(DIGITAL_SPECIMEN, JsonNode.class),
-        MAPPER.readValue(CHANGE, JsonNode.class),
-        COMMENT);
+  public static CreateUpdateTombstoneEvent givenEvent(String entityType) {
+    return new CreateUpdateTombstoneEvent()
+        .withId(PID)
+        .withType("ods:CreateUpdateTombstoneEvent")
+        .withOdsID(PID)
+        .withOdsType("https://doi.org/10.15468/1a2b3c")
+        .withProvActivity(new ProvActivity()
+            .withId(ACTIVITY_ID)
+            .withType(ProvActivity.Type.ODS_CREATE)
+            .withProvEndedAtTime(Date.from(Instant.parse("2024-06-11T09:14:00.348Z")))
+            .withProvWasAssociatedWith(List.of(
+                new ProvWasAssociatedWith()
+                    .withId("https://orcid.org/0000-0002-1825-0097")
+                    .withProvHadRole(ProvHadRole.ODS_APPROVER),
+                new ProvWasAssociatedWith()
+                    .withId("https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX")
+                    .withProvHadRole(ProvHadRole.ODS_REQUESTOR),
+                new ProvWasAssociatedWith()
+                    .withId("https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX")
+                    .withProvHadRole(ProvHadRole.ODS_GENERATOR)))
+            .withProvUsed(PID))
+        .withProvEntity(new ProvEntity()
+            .withId(PID)
+            .withType(entityType)
+            .withProvWasGeneratedBy(ACTIVITY_ID))
+        .withOdsHasProvAgent(List.of(
+            new Agent()
+                .withType(Type.PROV_PERSON)
+                .withId("https://orcid.org/0000-0002-1825-0097")
+                .withSchemaName("John Doe"),
+            new Agent()
+                .withType(Type.PROV_SOFTWARE_AGENT)
+                .withId("https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX")
+                .withSchemaName("Digital Specimen Processor")
+        ));
   }
-  private static String CHANGE = """
-    [
-    {
-      "op": "replace",
-      "path": "/ods:attributes/ods:datasetId",
-      "value": "A Dataset-5"
-    }
-  ]
-  """;
-
-
-  private static String DIGITAL_SPECIMEN = """
-      {
-          "id": "20.5000.1025/MKA-93P-4MS",
-          "midsLevel": 0,
-          "version": 7,
-          "created": 1676027058.87354,
-          "digitalSpecimen": {
-            "ods:physicalSpecimenId": "dissco-futures",
-            "ods:type": "BotanySpecimen",
-            "ods:attributes": {
-              "ods:physicalSpecimenIdType": "cetaf",
-              "ods:organizationId": "https://ror.org/0349vqz63",
-              "ods:specimenName": "dissco-futures",
-              "ods:datasetId": "A Dataset-5",
-              "ods:physicalSpecimenCollection": "A collection",
-              "ods:sourceSystemId": "20.5000.1025/GW0-TYL-YRU",
-              "dwca:id": "dissco-futures"
-            },
-            "ods:originalAttributes": {
-              "dwc:eventDate": "1994-08-25",
-              "dwc:family": "Cupressaceae",
-              "dwc:genus": "Glyptostrobus",
-              "dwc:higherGeography": "Indo-China",
-              "dwc:specificEpithet": "pensilis",
-              "dwc:nomenclaturalCode": "ICBN",
-              "dwc:catalogNumber": "00622948",
-              "dwc:country": "LA",
-              "dwc:basisOfRecord": "PreservedSpecimen"
-            }
-          }
-        }
-      """;
 
 }

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.ReplaceOptions;
-import eu.dissco.core.provenanceservice.domain.CreateUpdateDeleteEvent;
+import eu.dissco.core.provenanceservice.schema.CreateUpdateTombstoneEvent;
 import lombok.RequiredArgsConstructor;
 import org.bson.Document;
 import org.springframework.stereotype.Repository;
@@ -16,7 +16,7 @@ public class EventRepository {
   private final MongoDatabase database;
   private final ObjectMapper mapper;
 
-  public boolean insertNewVersion(String versionId, CreateUpdateDeleteEvent event,
+  public boolean insertNewVersion(String versionId, CreateUpdateTombstoneEvent event,
       String collectionName)
       throws JsonProcessingException {
     var collection = database.getCollection(collectionName);

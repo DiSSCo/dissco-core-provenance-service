@@ -21,10 +21,7 @@ public class KafkaConsumerService {
 
   private final ProcessingService processingService;
 
-  @RetryableTopic(
-      backoff = @Backoff(value = 3000L),
-      attempts = "3",
-      autoCreateTopics = "true")
+  @RetryableTopic(backoff = @Backoff(value = 3000L))
   @KafkaListener(topics = "${spring.kafka.consumer.topic}")
   public void getMessages(@Payload String message)
       throws JsonProcessingException, MongodbException, UnknownSubjectException {
