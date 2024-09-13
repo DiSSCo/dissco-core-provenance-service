@@ -39,7 +39,8 @@ public class ProcessingService {
     var collectionName = parseSubjectType(event);
     var eventResult = eventRepository.insertNewVersion(versionId, event, collectionName);
     if (eventResult) {
-      log.info("Successfully processed event information for {}: {}",
+      log.info("Successfully processed {} event information for {}: {}",
+          event.getProvActivity().getType(),
           event.getProvEntity().getType(),
           versionId);
     } else {
