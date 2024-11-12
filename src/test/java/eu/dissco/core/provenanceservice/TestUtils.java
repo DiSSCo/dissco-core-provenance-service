@@ -27,8 +27,8 @@ public class TestUtils {
     return new CreateUpdateTombstoneEvent()
         .withId(PID)
         .withType("ods:CreateUpdateTombstoneEvent")
-        .withOdsID(PID)
-        .withOdsType("https://doi.org/10.15468/1a2b3c")
+        .withDctermsIdentifier(PID)
+        .withOdsFdoType("https://doi.org/10.15468/1a2b3c")
         .withProvActivity(new ProvActivity()
             .withId(ACTIVITY_ID)
             .withType(ProvActivity.Type.ODS_CREATE)
@@ -36,19 +36,19 @@ public class TestUtils {
             .withProvWasAssociatedWith(List.of(
                 new ProvWasAssociatedWith()
                     .withId("https://orcid.org/0000-0002-1825-0097")
-                    .withProvHadRole(ProvHadRole.ODS_APPROVER),
+                    .withProvHadRole(ProvHadRole.APPROVER),
                 new ProvWasAssociatedWith()
                     .withId("https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX")
-                    .withProvHadRole(ProvHadRole.ODS_REQUESTOR),
+                    .withProvHadRole(ProvHadRole.REQUESTOR),
                 new ProvWasAssociatedWith()
                     .withId("https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX")
-                    .withProvHadRole(ProvHadRole.ODS_GENERATOR)))
+                    .withProvHadRole(ProvHadRole.GENERATOR)))
             .withProvUsed(PID))
         .withProvEntity(new ProvEntity()
             .withId(PID)
             .withType(entityType)
             .withProvWasGeneratedBy(ACTIVITY_ID))
-        .withOdsHasProvAgent(List.of(
+        .withOdsHasAgents(List.of(
             new Agent()
                 .withType(Type.PROV_PERSON)
                 .withId("https://orcid.org/0000-0002-1825-0097")
