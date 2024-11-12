@@ -93,23 +93,23 @@ class ProcessingServiceTest {
               {
         "@id": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
         "@type": "ods:CreateUpdateTombstoneEvent",
-        "ods:ID": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
-        "ods:type": "https://doi.org/10.15468/1a2b3c",
+        "dcterms:identifier": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
+        "ods:fdoType": "https://doi.org/10.15468/1a2b3c",
         "prov:Activity": {
           "@id": "7ba628d4-2e28-4ce4-ad1e-e99c97c20507",
           "@type": "ods:Create",
           "prov:wasAssociatedWith": [
             {
               "@id": "https://orcid.org/0000-0002-1825-0097",
-              "prov:hadRole": "ods:Approver"
+              "prov:hadRole": "Approver"
             },
             {
               "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
-              "prov:hadRole": "ods:Requestor"
+              "prov:hadRole": "Requestor"
             },
             {
               "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
-              "prov:hadRole": "ods:Generator"
+              "prov:hadRole": "Generator"
             }
           ],
           "prov:endedAtTime": "2024-06-11T09:14:00.348Z",
@@ -122,7 +122,7 @@ class ProcessingServiceTest {
         """
                 "prov:wasGeneratedBy": "7ba628d4-2e28-4ce4-ad1e-e99c97c20507"
               },
-              "ods:hasProvAgent": [
+              "ods:hasAgents": [
                 {
                   "@id": "https://orcid.org/0000-0002-1825-0097",
                   "@type": "prov:Person",
