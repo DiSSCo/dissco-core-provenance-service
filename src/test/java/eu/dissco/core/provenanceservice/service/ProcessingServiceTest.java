@@ -3,6 +3,7 @@ package eu.dissco.core.provenanceservice.service;
 import static eu.dissco.core.provenanceservice.TestUtils.MAPPER;
 import static eu.dissco.core.provenanceservice.TestUtils.PID;
 import static eu.dissco.core.provenanceservice.TestUtils.givenEvent;
+import static eu.dissco.core.provenanceservice.TestUtils.givenMessage;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -84,58 +85,6 @@ class ProcessingServiceTest {
     // Then
   }
 
-  private String givenMessage() {
-    return givenMessage("ods:DigitalSpecimen");
-  }
 
-  private String givenMessage(String entityType) {
-    return """
-              {
-        "@id": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
-        "@type": "ods:CreateUpdateTombstoneEvent",
-        "dcterms:identifier": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
-        "ods:fdoType": "https://doi.org/10.15468/1a2b3c",
-        "prov:Activity": {
-          "@id": "7ba628d4-2e28-4ce4-ad1e-e99c97c20507",
-          "@type": "ods:Create",
-          "prov:wasAssociatedWith": [
-            {
-              "@id": "https://orcid.org/0000-0002-1825-0097",
-              "prov:hadRole": "Approver"
-            },
-            {
-              "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
-              "prov:hadRole": "Requestor"
-            },
-            {
-              "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
-              "prov:hadRole": "Generator"
-            }
-          ],
-          "prov:endedAtTime": "2024-06-11T09:14:00.348Z",
-          "prov:used": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1"
-        },
-        "prov:Entity": {
-          "@id": "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1",
-        """ +
-        "\"@type\":\"" + entityType + "\"," +
-        """
-                "prov:wasGeneratedBy": "7ba628d4-2e28-4ce4-ad1e-e99c97c20507"
-              },
-              "ods:hasAgents": [
-                {
-                  "@id": "https://orcid.org/0000-0002-1825-0097",
-                  "@type": "prov:Person",
-                  "schema:name": "John Doe"
-                },
-                {
-                  "@id": "https://hdl.handle.net/20.5000.1025/XXX-XXX-XXX",
-                  "@type": "prov:SoftwareAgent",
-                  "schema:name": "Digital Specimen Processor"
-                }
-              ]
-            }
-                        """;
-  }
 
 }
