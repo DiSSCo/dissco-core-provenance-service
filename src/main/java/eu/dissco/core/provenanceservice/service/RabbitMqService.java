@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @AllArgsConstructor
-public class RabbitMQService {
+public class RabbitMqService {
 
   private final ProcessingService processingService;
 

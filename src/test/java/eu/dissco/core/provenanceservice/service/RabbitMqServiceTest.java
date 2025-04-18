@@ -13,15 +13,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class RabbitMQServiceTest {
+class RabbitMqServiceTest {
 
-  private RabbitMQService rabbitMQService;
+  private RabbitMqService rabbitMqService;
   @Mock
   private ProcessingService processingService;
 
   @BeforeEach
   void setup() {
-    rabbitMQService = new RabbitMQService(processingService);
+    rabbitMqService = new RabbitMqService(processingService);
   }
 
   @Test
@@ -30,7 +30,7 @@ class RabbitMQServiceTest {
     var message = givenMessage();
 
     // When
-    rabbitMQService.getMessages(message);
+    rabbitMqService.getMessages(message);
 
     // Then
     then(processingService).should().handleMessage(message);
@@ -43,6 +43,6 @@ class RabbitMQServiceTest {
     doThrow(JsonProcessingException.class).when(processingService).handleMessage(message);
 
     // When / Then
-    assertThrows(JsonProcessingException.class, () -> rabbitMQService.getMessages(message));
+    assertThrows(JsonProcessingException.class, () -> rabbitMqService.getMessages(message));
   }
 }

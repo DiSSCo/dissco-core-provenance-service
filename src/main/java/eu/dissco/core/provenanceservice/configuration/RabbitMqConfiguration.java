@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AllArgsConstructor
-public class RabbitMQConfiguration {
+public class RabbitMqConfiguration {
 
   private final MessageCompressionComponent compressedMessageConverter;
 
