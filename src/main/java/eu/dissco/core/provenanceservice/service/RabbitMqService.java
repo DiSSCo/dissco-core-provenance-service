@@ -16,7 +16,7 @@ public class RabbitMqService {
 
   private final ProcessingService processingService;
 
-  @RabbitListener(queues = "${rabbitmq.queue.name}")
+  @RabbitListener(queues = "${rabbitmq.queue.name:create-update-tombstone-queue}")
   public void getMessages(@Payload String message)
       throws JsonProcessingException, MongodbException, UnknownSubjectException {
     processingService.handleMessage(message);
