@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.4.4</version>
+    <version>3.5.3</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>eu.dissco.core</groupId>
@@ -15,8 +15,8 @@
   <name>provenance-service</name>
   <description>DiSSCo core consumer for event provenance records</description>
   <properties>
-    <java.version>17</java.version>
-    <testcontainers.version>1.20.1</testcontainers.version>
+    <java.version>21</java.version>
+    <testcontainers.version>1.21.2</testcontainers.version>
     <sonar.organization>dissco</sonar.organization>
     <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     <sonar.coverage.jacoco.xmlReportPaths>../app-it/target/site/jacoco-aggregate/jacoco.xml
@@ -126,7 +126,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.7</version>
+        <version>0.8.13</version>
         <executions>
           <execution>
             <id>prepare-agent</id>
