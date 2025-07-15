@@ -34,7 +34,8 @@ class ProcessingServiceTest {
     return Stream.of(
         Arguments.of("ods:DigitalSpecimen", "digital_specimen_provenance"),
         Arguments.of("ods:DigitalMedia", "digital_media_provenance"),
-        Arguments.of("ods:Annotation", "annotation_provenance")
+        Arguments.of("ods:Annotation", "annotation_provenance"),
+        Arguments.of("ods:VirtualCollection", "virtual_collection_provenance")
     );
   }
 
