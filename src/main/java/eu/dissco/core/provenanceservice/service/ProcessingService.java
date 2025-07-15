@@ -29,6 +29,7 @@ public class ProcessingService {
     map.put("ods:MachineAnnotationService", "machine_annotation_service_provenance");
     map.put("ods:DataMapping", "data_mapping_provenance");
     map.put("ods:SourceSystem", "source_system_provenance");
+    map.put("ods:VirtualCollection", "virtual_collection_provenance");
     return map;
   }
 
