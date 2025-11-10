@@ -1,11 +1,11 @@
 package eu.dissco.core.provenanceservice.service;
 
+import static eu.dissco.core.provenanceservice.TestUtils.MAPPER;
+import static eu.dissco.core.provenanceservice.TestUtils.givenEvent;
 import static eu.dissco.core.provenanceservice.TestUtils.givenMessage;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.doThrow;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ class RabbitMqServiceTest {
 
   @BeforeEach
   void setup() {
-    rabbitMqService = new RabbitMqService(processingService);
+    rabbitMqService = new RabbitMqService(processingService, MAPPER);
   }
 
   @Test
@@ -30,19 +30,22 @@ class RabbitMqServiceTest {
     var message = givenMessage();
 
     // When
-    rabbitMqService.getMessages(message);
+    rabbitMqService.getMessages(List.of(message));
 
     // Then
-    then(processingService).should().handleMessage(message);
+    then(processingService).should().handleMessages(List.of(givenEvent()));
   }
 
   @Test
-  void testGetMessagesWithException() throws Exception {
+  void testGetMessagesFailed() throws Exception {
     // Given
-    var message = givenMessage();
-    doThrow(JsonProcessingException.class).when(processingService).handleMessage(message);
+    var message = "bad message";
 
-    // When / Then
-    assertThrows(JsonProcessingException.class, () -> rabbitMqService.getMessages(message));
+    // When
+    rabbitMqService.getMessages(List.of(message));
+
+    // Then
+    then(processingService).should().handleMessages(List.of());
   }
+
 }

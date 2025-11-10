@@ -1,11 +1,14 @@
 package eu.dissco.core.provenanceservice.repository;
 
 import static eu.dissco.core.provenanceservice.TestUtils.MAPPER;
+import static eu.dissco.core.provenanceservice.TestUtils.MEDIA_COL;
 import static eu.dissco.core.provenanceservice.TestUtils.PID;
+import static eu.dissco.core.provenanceservice.TestUtils.SPECIMEN_COL;
 import static eu.dissco.core.provenanceservice.TestUtils.givenEvent;
+import static eu.dissco.core.provenanceservice.TestUtils.givenProvRecord;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,42 +19,44 @@ class EventRepositoryIT extends BaseMongoRepositoryIT {
 
   @BeforeEach
   void setup() {
-    repository = new EventRepository(database, MAPPER);
+    repository = new EventRepository(database);
   }
 
   @Test
-  void testInsertNew() throws JsonProcessingException {
+  void testInsertNew() throws Exception {
     // Given
-    var event = givenEvent();
-    var expected = Document.parse(MAPPER.writeValueAsString(event));
-    expected.append("_id", PID);
-    var collectionName = "digital_specimen_provenance";
-    var collection = database.getCollection(collectionName);
+    var specimenProvRecord = givenProvRecord();
+    var mediaProvRecord = givenProvRecord(givenEvent("ods:DigitalMedia"), MEDIA_COL);
+    var expectedSpecimen = Document.parse(MAPPER.writeValueAsString(givenEvent()));
+    expectedSpecimen.append("_id", PID);
+    var expectedMedia = Document.parse(MAPPER.writeValueAsString(givenEvent("ods:DigitalMedia")));
+    expectedMedia.append("_id", PID);
 
     // When
-    repository.insertNewVersion(PID, event, collectionName);
+    var result = repository.insertNewVersion(List.of(specimenProvRecord, mediaProvRecord));
+    var specimenResult = database.getCollection(SPECIMEN_COL).find().first();
+    var mediaResult = database.getCollection(MEDIA_COL).find().first();
 
     // Then
-    var result = collection.find();
-    assertThat(result.first()).isEqualTo(expected);
+    assertThat(result).isEmpty();
+    assertThat(specimenResult).isEqualTo(expectedSpecimen);
+    assertThat(mediaResult).isEqualTo(expectedMedia);
   }
 
   @Test
-  void testInsertUpdated() throws JsonProcessingException {
+  void testInsertUpdated() throws Exception {
     // Given
-    var event = givenEvent();
-    var expected = Document.parse(MAPPER.writeValueAsString(event));
+    var specimenProvRecord = givenProvRecord();
+    var expected = Document.parse(MAPPER.writeValueAsString(givenEvent()));
     expected.append("_id", PID);
-    var collectionName = "digital_specimen_provenance";
-    var collection = database.getCollection(collectionName);
-    repository.insertNewVersion(PID, event, collectionName);
+    repository.insertNewVersion(List.of(specimenProvRecord));
 
     // When
-    repository.insertNewVersion(PID, event, collectionName);
+    var result = repository.insertNewVersion(List.of(specimenProvRecord));
+    var specimenResult = database.getCollection(SPECIMEN_COL).find().first();
 
     // Then
-    var result = collection.find();
-    assertThat(result.first()).isEqualTo(expected);
+    assertThat(result).isEmpty();
+    assertThat(specimenResult).isEqualTo(expected);
   }
-
 }

@@ -1,6 +1,8 @@
 package eu.dissco.core.provenanceservice;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.dissco.core.provenanceservice.domain.CreateUpdateTombstoneRecord;
 import eu.dissco.core.provenanceservice.schema.Agent;
 import eu.dissco.core.provenanceservice.schema.Agent.Type;
 import eu.dissco.core.provenanceservice.schema.CreateUpdateTombstoneEvent;
@@ -11,6 +13,7 @@ import eu.dissco.core.provenanceservice.schema.ProvWasAssociatedWith.ProvHadRole
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import org.bson.Document;
 
 public class TestUtils {
 
@@ -18,9 +21,26 @@ public class TestUtils {
   public static final String PID = "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1";
   public static final String ACTIVITY_ID = "7ba628d4-2e28-4ce4-ad1e-e99c97c20507";
   public static final String SUBJECT_TYPE = "ods:DigitalSpecimen";
+  public static final String SPECIMEN_COL = "digital_specimen_provenance";
+  public static final String MEDIA_COL = "digital_media_provenance";
 
   public static CreateUpdateTombstoneEvent givenEvent() {
     return givenEvent(SUBJECT_TYPE);
+  }
+
+  public static CreateUpdateTombstoneRecord givenProvRecord() throws JsonProcessingException {
+    return givenProvRecord(givenEvent(), SPECIMEN_COL);
+  }
+
+  public static CreateUpdateTombstoneRecord givenProvRecord(CreateUpdateTombstoneEvent event, String collection)
+      throws JsonProcessingException {
+    var provDocument = Document.parse(MAPPER.writeValueAsString(event));
+    provDocument.append("_id", event.getId());
+    return new CreateUpdateTombstoneRecord(
+        provDocument,
+        new Document("_id", event.getId()),
+        collection
+    );
   }
 
   public static CreateUpdateTombstoneEvent givenEvent(String entityType) {

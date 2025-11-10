@@ -1,17 +1,19 @@
 package eu.dissco.core.provenanceservice.service;
 
 import static eu.dissco.core.provenanceservice.TestUtils.MAPPER;
-import static eu.dissco.core.provenanceservice.TestUtils.PID;
+import static eu.dissco.core.provenanceservice.TestUtils.MEDIA_COL;
+import static eu.dissco.core.provenanceservice.TestUtils.SPECIMEN_COL;
 import static eu.dissco.core.provenanceservice.TestUtils.givenEvent;
-import static eu.dissco.core.provenanceservice.TestUtils.givenMessage;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static eu.dissco.core.provenanceservice.TestUtils.givenProvRecord;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.dissco.core.provenanceservice.exception.MongodbException;
-import eu.dissco.core.provenanceservice.exception.UnknownSubjectException;
 import eu.dissco.core.provenanceservice.repository.EventRepository;
+import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,10 +32,10 @@ class ProcessingServiceTest {
 
   private ProcessingService service;
 
-  private static Stream<Arguments> provideTestHandleMessage() {
+  private static Stream<Arguments> provideTestHandleMessages() {
     return Stream.of(
-        Arguments.of("ods:DigitalSpecimen", "digital_specimen_provenance"),
-        Arguments.of("ods:DigitalMedia", "digital_media_provenance"),
+        Arguments.of("ods:DigitalSpecimen", SPECIMEN_COL),
+        Arguments.of("ods:DigitalMedia", MEDIA_COL),
         Arguments.of("ods:Annotation", "annotation_provenance"),
         Arguments.of("ods:VirtualCollection", "virtual_collection_provenance")
     );
@@ -45,47 +47,38 @@ class ProcessingServiceTest {
   }
 
   @ParameterizedTest
-  @MethodSource("provideTestHandleMessage")
-  void testHandleMessage(String subjectType, String collectionName)
-      throws JsonProcessingException, MongodbException, UnknownSubjectException {
+  @MethodSource("provideTestHandleMessages")
+  void testHandleMessages(String subjectType, String collection)
+      throws Exception {
     // Given
-    var message = givenMessage(subjectType);
     var event = givenEvent(subjectType);
-    given(repository.insertNewVersion(PID, event, collectionName)).willReturn(true);
+    given(repository.insertNewVersion(List.of(givenProvRecord(event, collection)))).willReturn(List.of());
 
     // When
-    service.handleMessage(message);
-
-    // Then
-    then(repository).should().insertNewVersion(PID, event, collectionName);
-
+    assertDoesNotThrow(() -> service.handleMessages(List.of(event)));
   }
 
   @Test
-  void testFailedHandleMessage() throws JsonProcessingException {
+  void testFailedHandleMessages() throws JsonProcessingException {
     // Given
-    var message = givenMessage();
     var event = givenEvent();
-    given(repository.insertNewVersion(PID, event, "digital_specimen_provenance")).willReturn(false);
+    given(repository.insertNewVersion(List.of(givenProvRecord()))).willReturn(List.of(givenProvRecord()));
 
     // When
-    assertThatThrownBy(() -> service.handleMessage(message)).isInstanceOf(MongodbException.class);
-
+    assertThrowsExactly(MongodbException.class, () -> service.handleMessages(List.of(event)));
     // Then
   }
 
   @Test
-  void testHandleMessageUnknownSubjectType() {
+  void testHandleMessagesUnknownSubjectType() throws Exception {
     // Given
-    var message = givenMessage("ods:UnknownType");
+    var event = givenEvent("unknown subject");
 
     // When
-    assertThatThrownBy(() -> service.handleMessage(message)).isInstanceOf(
-        UnknownSubjectException.class);
+    service.handleMessages(List.of(event));
 
     // Then
+    then(repository).shouldHaveNoInteractions();
   }
-
-
 
 }
