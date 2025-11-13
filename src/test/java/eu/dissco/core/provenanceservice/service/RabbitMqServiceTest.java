@@ -27,7 +27,7 @@ class RabbitMqServiceTest {
   }
 
   @Test
-  void testGetMessages() throws Exception {
+  void testGetMessages(){
     // Given
     var message = givenMessage();
 
@@ -39,7 +39,7 @@ class RabbitMqServiceTest {
   }
 
   @Test
-  void testGetMessagesFailed() throws Exception {
+  void testGetMessagesFailed() {
     // Given
     var message = "bad message";
 
