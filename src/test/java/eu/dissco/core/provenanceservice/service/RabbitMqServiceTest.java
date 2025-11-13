@@ -15,13 +15,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class RabbitMqServiceTest {
 
-  private RabbitMqService rabbitMqService;
+  private RabbitMqConsumerService rabbitMqService;
   @Mock
   private ProcessingService processingService;
+  @Mock
+  private RabbitMqPublisherService rabbitMqPublisherService;
 
   @BeforeEach
   void setup() {
-    rabbitMqService = new RabbitMqService(processingService, MAPPER);
+    rabbitMqService = new RabbitMqConsumerService(processingService, rabbitMqPublisherService, MAPPER);
   }
 
   @Test
@@ -46,6 +48,7 @@ class RabbitMqServiceTest {
 
     // Then
     then(processingService).should().handleMessages(List.of());
+    then(rabbitMqPublisherService).should().dlqMessageRaw(message);
   }
 
 }

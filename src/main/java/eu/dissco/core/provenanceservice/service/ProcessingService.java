@@ -23,6 +23,7 @@ public class ProcessingService {
 
   private static final Map<String, String> SUBJECT_MAPPING = provideSubjectMapping();
   private final ObjectMapper mapper;
+  private final RabbitMqPublisherService rabbitMqPublisherService;
   private final EventRepository eventRepository;
 
   private static Map<String, String> provideSubjectMapping() {
@@ -37,16 +38,21 @@ public class ProcessingService {
     return map;
   }
 
-  public void handleMessages(List<CreateUpdateTombstoneEvent> events)
-      throws MongodbException {
+  public void handleMessages(List<CreateUpdateTombstoneEvent> events) {
     var provRecords = toMongodbRecords(events);
     if (!provRecords.isEmpty()) {
-      var failedEvents = eventRepository.insertNewVersion(provRecords);
-      if (failedEvents.isEmpty()) {
+      var failedDocuments = eventRepository.insertNewVersion(provRecords);
+      if (failedDocuments.isEmpty()) {
         log.info("Successfully processed {} events", events.size());
       } else {
-        log.warn("Failed to insert event into mongodb collections: {}", failedEvents);
-        throw new MongodbException();
+        log.warn("Failed to insert event into mongodb collections: {}", failedDocuments);
+        failedDocuments.stream().map(CreateUpdateTombstoneRecord::event).forEach(event -> {
+          try {
+            rabbitMqPublisherService.dlqMessage(event);
+          } catch (JsonProcessingException e) {
+            log.error("Failed to publish DLQ event to RabbitMQ", e);
+          }
+        });
       }
     }
   }
@@ -70,9 +76,14 @@ public class ProcessingService {
         document.append("_id", event.getId());
         var filter = new Document("_id", event.getId());
         var collection = parseSubjectType(event);
-        return new CreateUpdateTombstoneRecord(document, filter, collection);
+        return new CreateUpdateTombstoneRecord(document, filter, collection, event);
       } catch (JsonProcessingException | UnknownSubjectException e) {
         log.error("Failed to parse event information from mongodb", e);
+        try {
+          rabbitMqPublisherService.dlqMessage(event);
+        } catch (Exception e1) {
+          log.error("Failed to DLQ message", e1);
+        }
         return null;
       }
     }).filter(Objects::nonNull).toList();

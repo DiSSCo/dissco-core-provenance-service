@@ -39,7 +39,8 @@ public class TestUtils {
     return new CreateUpdateTombstoneRecord(
         provDocument,
         new Document("_id", event.getId()),
-        collection
+        collection,
+        event
     );
   }
 

@@ -6,12 +6,10 @@ import static eu.dissco.core.provenanceservice.TestUtils.SPECIMEN_COL;
 import static eu.dissco.core.provenanceservice.TestUtils.givenEvent;
 import static eu.dissco.core.provenanceservice.TestUtils.givenProvRecord;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import eu.dissco.core.provenanceservice.exception.MongodbException;
 import eu.dissco.core.provenanceservice.repository.EventRepository;
 import java.util.List;
 import java.util.stream.Stream;
@@ -29,6 +27,8 @@ class ProcessingServiceTest {
 
   @Mock
   private EventRepository repository;
+  @Mock
+  private RabbitMqPublisherService rabbitMqPublisherService;
 
   private ProcessingService service;
 
@@ -43,7 +43,7 @@ class ProcessingServiceTest {
 
   @BeforeEach
   void setup() {
-    service = new ProcessingService(MAPPER, repository);
+    service = new ProcessingService(MAPPER, rabbitMqPublisherService, repository);
   }
 
   @ParameterizedTest
@@ -65,8 +65,10 @@ class ProcessingServiceTest {
     given(repository.insertNewVersion(List.of(givenProvRecord()))).willReturn(List.of(givenProvRecord()));
 
     // When
-    assertThrowsExactly(MongodbException.class, () -> service.handleMessages(List.of(event)));
+    service.handleMessages(List.of(event));
+
     // Then
+    then(rabbitMqPublisherService).should().dlqMessage(event);
   }
 
   @Test
@@ -79,6 +81,7 @@ class ProcessingServiceTest {
 
     // Then
     then(repository).shouldHaveNoInteractions();
+    then(rabbitMqPublisherService).should().dlqMessage(event);
   }
 
 }
