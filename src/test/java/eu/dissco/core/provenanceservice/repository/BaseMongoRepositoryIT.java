@@ -11,7 +11,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
-public class BaseMongoRepositoryIT {
+class BaseMongoRepositoryIT {
 
   private static final DockerImageName MONGODB =
       DockerImageName.parse("mongo:6.0.4");
