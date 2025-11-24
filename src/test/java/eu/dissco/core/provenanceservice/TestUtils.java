@@ -2,6 +2,12 @@ package eu.dissco.core.provenanceservice;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import eu.dissco.core.provenanceservice.configuration.DateDeserializer;
+import eu.dissco.core.provenanceservice.configuration.DateSerializer;
+import eu.dissco.core.provenanceservice.configuration.InstantDeserializer;
+import eu.dissco.core.provenanceservice.configuration.InstantSerializer;
 import eu.dissco.core.provenanceservice.domain.CreateUpdateTombstoneRecord;
 import eu.dissco.core.provenanceservice.schema.Agent;
 import eu.dissco.core.provenanceservice.schema.Agent.Type;
@@ -17,7 +23,7 @@ import org.bson.Document;
 
 public class TestUtils {
 
-  public static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
+  public static final ObjectMapper MAPPER = objectMapper();
   public static final String PID = "https://hdl.handle.net/20.5000.1025/ABC-DEF-GHI/1";
   public static final String ACTIVITY_ID = "7ba628d4-2e28-4ce4-ad1e-e99c97c20507";
   public static final String SUBJECT_TYPE = "ods:DigitalSpecimen";
@@ -32,7 +38,8 @@ public class TestUtils {
     return givenProvRecord(givenEvent(), SPECIMEN_COL);
   }
 
-  public static CreateUpdateTombstoneRecord givenProvRecord(CreateUpdateTombstoneEvent event, String collection)
+  public static CreateUpdateTombstoneRecord givenProvRecord(CreateUpdateTombstoneEvent event,
+      String collection)
       throws JsonProcessingException {
     var provDocument = Document.parse(MAPPER.writeValueAsString(event));
     provDocument.append("_id", event.getId());
@@ -135,4 +142,16 @@ public class TestUtils {
             """;
   }
 
+  private static ObjectMapper objectMapper() {
+    var mapper = new ObjectMapper();
+    mapper.findAndRegisterModules();
+    SimpleModule dateModule = new SimpleModule();
+    dateModule.addSerializer(Date.class, new DateSerializer());
+    dateModule.addDeserializer(Date.class, new DateDeserializer());
+    dateModule.addSerializer(Instant.class, new InstantSerializer());
+    dateModule.addDeserializer(Instant.class, new InstantDeserializer());
+    mapper.registerModule(dateModule);
+    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    return mapper;
+  }
 }
