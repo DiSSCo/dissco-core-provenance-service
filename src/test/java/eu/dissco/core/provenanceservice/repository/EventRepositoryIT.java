@@ -41,6 +41,8 @@ class EventRepositoryIT extends BaseMongoRepositoryIT {
     assertThat(result).isEmpty();
     assertThat(specimenResult).isEqualTo(expectedSpecimen);
     assertThat(mediaResult).isEqualTo(expectedMedia);
+    assertThat(((Document) specimenResult.get("prov:Activity"))).containsEntry("prov:endedAtTime",
+        "2024-06-11T09:14:00.348Z");
   }
 
   @Test
