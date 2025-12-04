@@ -22,7 +22,7 @@ public class RabbitMqConsumerService {
   private final RabbitMqPublisherService rabbitMqPublisherService;
   private final ObjectMapper mapper;
 
-  @RabbitListener(queues = "${rabbitmq.queue.name:create-update-tombstone-queue}", containerFactory = "consumerBatchContainerFactory")
+  @RabbitListener(queues = "${rabbitmq.queue.name:provenance-queue}", containerFactory = "consumerBatchContainerFactory")
   public void getMessages(@Payload List<String> messages) {
     var events = messages.stream().map(message -> {
       try {

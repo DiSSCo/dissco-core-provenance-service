@@ -41,9 +41,9 @@ class RabbitMqPublisherServiceTest {
 
   private static void declareRabbitResources()
       throws IOException, InterruptedException {
-    var exchangeName = "create-update-tombstone-exchange-dlq";
-    var queueName = "create-update-tombstone-queue-dlq";
-    var routingKey = "create-update-tombstone-dlq";
+    var exchangeName = "provenance-exchange-dlq";
+    var queueName = "provenance-queue-dlq";
+    var routingKey = "provenance-dlq";
     container.execInContainer("rabbitmqadmin", "declare", "exchange", "name=" + exchangeName,
         "type=direct", "durable=true");
     container.execInContainer("rabbitmqadmin", "declare", "queue", "name=" + queueName,
@@ -70,7 +70,7 @@ class RabbitMqPublisherServiceTest {
     rabbitMqPublisherService.dlqMessageRaw("some message");
 
     // Then
-    var dlqMessage = rabbitTemplate.receive("create-update-tombstone-queue-dlq");
+    var dlqMessage = rabbitTemplate.receive("provenance-queue-dlq");
     assertThat(new String(dlqMessage.getBody())).isNotNull();
   }
 
@@ -82,7 +82,7 @@ class RabbitMqPublisherServiceTest {
     rabbitMqPublisherService.dlqMessage(givenEvent());
 
     // Then
-    var dlqMessage = rabbitTemplate.receive("create-update-tombstone-queue-dlq");
+    var dlqMessage = rabbitTemplate.receive("provenance-queue-dlq");
     assertThat(new String(dlqMessage.getBody())).isNotNull();
   }
 
