@@ -15,9 +15,9 @@ public class RabbitMqProperties {
   private int batchSize = 500;
 
   @NotBlank
-  private String dlqExchangeName = "create-update-tombstone-exchange-dlq";
+  private String dlqExchangeName = "provenance-exchange-dlq";
 
   @NotBlank
-  private String dlqRoutingKeyName = "create-update-tombstone-dlq";
+  private String dlqRoutingKeyName = "provenance-dlq";
 
 }
